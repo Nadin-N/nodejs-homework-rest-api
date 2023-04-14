@@ -46,8 +46,21 @@ const getCurrent = async (req, res) => {
 
 const logout = async (req, res) => {
 	const { _id } = req.user;
+	console.log(_id);
 	await User.findByIdAndUpdate(_id, { token: "" });
-	res.status(204);
+	res.json({
+		message: "Logout success",
+	});
+	// res.status(204);
+};
+const subscription = async (req, res) => {
+	const { _id } = req.user;
+	console.log(req.user);
+	const updatedUser = await User.findByIdAndUpdate(_id, req.body, { new: true });
+	if (!updatedUser) {
+		throw HttpError(404, "Not Found");
+	}
+	res.json({ email: updatedUser.email, subscription: updatedUser.subscription });
 };
 
 module.exports = {
@@ -55,4 +68,5 @@ module.exports = {
 	login: ctrlWrapper(login),
 	getCurrent: ctrlWrapper(getCurrent),
 	logout: ctrlWrapper(logout),
+	subscription: ctrlWrapper(subscription),
 };
